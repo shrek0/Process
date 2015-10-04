@@ -4,14 +4,14 @@
  * @class
  * @section LICENSE
  *
- * ProtocolLearn copyright (C) 2015 shrek0
+ * Process copyright (C) 2015 shrek0
  *
- * ProtocolLearn is free software: you can redistribute it and/or modify
+ * Process is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * ProtocolLearn is distributed in the hope that it will be useful,
+ * Process is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -69,21 +69,21 @@ private:
 #include <list>
 #include <process.h>
 
-class Processes
-{
-public:
-    Processes();
+//class Processes
+//{
+//public:
+//    Processes();
 
-    typedef BasicIterator<Process, Processes, Process::ProcessID> IteratorType;
+//    typedef BasicIterator<Process, Processes, Process::ProcessID> IteratorType;
 
-    IteratorType begin() { return IteratorType(*this, getFirstPID()); }
-    IteratorType end() { return IteratorType(*this, getLastPID()); }
+//    IteratorType begin() { return IteratorType(*this, getFirstPID()); }
+//    IteratorType end() { return IteratorType(*this, getLastPID()); }
 
-    std::list<Process> filterByName(const std::string &name);
-    Process getProcess(const Process::ProcessID &processID);
+//    std::list<Process> filterByName(const std::string &name);
+//    Process getProcess(const Process::ProcessID &processID);
 
-private:
+//private:
 
-};
+//};
 
 #endif // PROCESSES_H

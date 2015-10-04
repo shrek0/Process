@@ -4,14 +4,14 @@
  * @class
  * @section LICENSE
  *
- * ProtocolLearn copyright (C) 2015 shrek0
+ * Process copyright (C) 2015 shrek0
  *
- * ProtocolLearn is free software: you can redistribute it and/or modify
+ * Process is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * ProtocolLearn is distributed in the hope that it will be useful,
+ * Process is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -36,9 +36,9 @@
 
 #include "directory.h"
 
-#include <cstdint>
+#include <vector>
 
-class std::vector;
+#include <cstdint>
 
 class Process
 {
@@ -120,11 +120,6 @@ public:
      */
     void call(MemoryAddress address);
 
-    void push(Byte byte);
-    void push(Word word);
-    void push(DoubleWord doubleWord);
-    void push(QuadWord quadWord);
-
     template<typename T>
     void push(T value) {
 
@@ -135,7 +130,7 @@ public:
 
         setProcesssRegisters(registers);
 
-        Word *wordArray = reinterpret_cast<Word*>(&value);
+        Register *wordArray = reinterpret_cast<Register*>(&value);
 
         size_t bytesToWrite=sizeof(T);
 
@@ -145,9 +140,9 @@ public:
         }
 
         if(bytesToWrite == sizeof(T)-1) {
-            Register lastWord = *reinterpret_cast<Byte *>(&value) + sizeof(T)-1;
+            Register lastWord = *reinterpret_cast<Register *>(&value) + sizeof(T)-1;
 
-            move(lastWord, registers.rsp+sizeof(T))
+            move(lastWord, registers.rsp+sizeof(T));
         }
 
     }
@@ -164,18 +159,18 @@ public:
      * @param source  Any word.
      * @param destinationAddress  Valid virtual process address.
      */
-    void move(Word source, MemoryAddress destinationAddress);
+    void move(Register source, MemoryAddress destinationAddress);
 
     void write(const std::vector<Byte> &bytesToWrite, MemoryAddress destinationAddresss);
 
-    std::vector<Byte> read(MemoryAddress sourceAddress, const std::vector::size_type &bytesCount);
+    std::vector<Byte> read(MemoryAddress sourceAddress, const std::vector<Byte>::size_type &bytesCount);
 
     /**
      * @brief copyFrom  Copy a Word from sourceAddress and return it.
      * @param sourceAddress
      * @return
      */
-    Word copyFrom(MemoryAddress sourceAddress);
+    Register copyFrom(MemoryAddress sourceAddress);
 
     /**
      * @brief getProcessID

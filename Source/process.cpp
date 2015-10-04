@@ -61,7 +61,7 @@ void Process::step()
 
 void Process::stop()
 {
-    kill(SIGSTOP); // In the end it's just sending SIGTRAP (and stop the )
+    kill(SIGSTOP); // In the end it's just sending SIGTRAP (and stop the process).
 }
 
 void Process::cont(int signal)
@@ -126,7 +126,7 @@ void Process::call(MemoryAddress address) {
 #elif defined __i386__
 //    registers.esp -= sizeof(register_t);
 
-    push(registers.rip);
+    push(registers.eip);
 
     registers.eip = address;
 #else
@@ -141,7 +141,7 @@ void Process::movePointer(MemoryAddress sourceAddress, MemoryAddress destination
     move(copyFrom(sourceAddress), destinationAddress);
 }
 
-void Process::move(Word source, MemoryAddress destinationAddress)
+void Process::move(Register source, MemoryAddress destinationAddress)
 {
     ptrace(PTRACE_POKEDATA, destinationAddress, source);
 }
@@ -149,36 +149,39 @@ void Process::move(Word source, MemoryAddress destinationAddress)
 void Process::write(const std::vector<Process::Byte> &bytesToWrite, Process::MemoryAddress destinationAddresss) {
     const auto &bytesToWriteLength = bytesToWrite.size();
 
-    if(bytesToWriteLength % sizeof(Word) != 0) {
-        Word word = bytesToWrite[0];
+    if(bytesToWriteLength % sizeof(Register) != 0) {
+        Register word = bytesToWrite[0];
 
         move(word, destinationAddresss++);
     }
 
     for(const Byte *pBytesToWrite = bytesToWrite.data(); pBytesToWrite < bytesToWrite.data()+bytesToWriteLength-1; pBytesToWrite+=2) {
-        Word word = *reinterpret_cast<const Word *>(pBytesToWrite);
+        Register word = *reinterpret_cast<const Register *>(pBytesToWrite);
 
         move(word, destinationAddresss);
 
-        destinationAddresss+=2;
+        destinationAddresss+=sizeof(Register);
     }
 }
 
 std::vector<Process::Byte> Process::read(Process::MemoryAddress sourceAddress, const std::vector<Byte>::size_type &bytesCount) {
     std::vector<Byte> vector;
-    vector.resize(bytesCount);
+    auto bytesToRead = bytesCount;
+    vector.resize(bytesToRead);
 
-    Word *data = reinterpret_cast<Register *>(vector.data());
+    Register *data = reinterpret_cast<Register *>(vector.data());
 
     while(bytesCount > 0) {
         *data++ = copyFrom(sourceAddress);
 
         sourceAddress+=sizeof(Register);
-        bytesCount-=sizeof(Register);
+        bytesToRead-=sizeof(Register);
     }
+
+    return vector;
 }
 
-Process::Word Process::copyFrom(MemoryAddress sourceAddress)
+Process::Register Process::copyFrom(MemoryAddress sourceAddress)
 {
     return ptrace(PTRACE_PEEKDATA, sourceAddress, 0); // @arg data is ignored here.
 }
